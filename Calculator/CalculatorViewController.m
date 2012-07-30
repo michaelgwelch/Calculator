@@ -7,11 +7,13 @@
 //
 
 #import "CalculatorViewController.h"
+#import "CalculatorBrain.h"
 
 @interface CalculatorViewController ()
  
 @property (nonatomic) BOOL userIsInMiddleOfEnteringNumber;
-@property (nonatomic, strong) NSMutableArray *stack;
+@property (nonatomic, strong) CalculatorBrain *brain;
+
 
 @end
 
@@ -19,34 +21,21 @@
 
 @synthesize display = _display;
 @synthesize userIsInMiddleOfEnteringNumber = _userIsInMiddleOfEnteringNumber;
-@synthesize stack = _stack;
+@synthesize brain = _brain;
 
 
-- (void) setStack:(NSMutableArray *)stack
+- (CalculatorBrain *)brain
 {
-    _stack = stack;
-}
-
-- (NSMutableArray *) stack
-{
-    if (!_stack) [self setStack:[[NSMutableArray alloc] init]];
-    return _stack;
-}
-
-- (void) push: (double) value
-{
-    [self.stack addObject:[NSNumber numberWithDouble:value]];
-}
-
-- (double) pop
-{
-    double value = [[self.stack lastObject] doubleValue];
-    [self.stack removeLastObject];
-    return value;
+    if (!_brain) {
+        _brain = [[CalculatorBrain alloc] init];
+    }
+    return _brain;
 }
 
 - (IBAction)digitPressed:(UIButton *)sender
 {
+    if (self.brain.operationError) return;
+    
     NSString *currentDisplay = self.display.text;
     NSString *digit = sender.currentTitle;
     
@@ -65,32 +54,34 @@
 
 - (IBAction)enterPressed
 {
+    if (self.brain.operationError) return;
+    
     self.userIsInMiddleOfEnteringNumber = NO;
     double value = [self.display.text doubleValue];
-    [self push:value];
+    [self.brain pushOperand:value];
 }
 
 - (IBAction)operationPressed:(UIButton *)sender
 {
+    if (self.brain.operationError) return;
     if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
     
-    NSString *operation = sender.currentTitle;
-    double op1 = [self pop];
-    double op2 = [self pop];
-    double result;
-    
-    if ([operation isEqualToString:@"*"])
+    double result = [self.brain performOperation:sender.currentTitle];
+    if (self.brain.operationError)
     {
-        result = op1 * op2;
+        self.display.text = @"Error";
     }
-    else if ([operation isEqualToString:@"/"])
+    else
     {
-        
+        self.display.text = [NSString stringWithFormat:@"%g", result];
     }
     
-    [self push:result];
-    self.display.text = [[NSNumber numberWithDouble:result] stringValue];
-    
+}
+
+- (IBAction)clearPressed
+{
+    [self.brain reset];
+    self.display.text = @"0";
 }
 
 
