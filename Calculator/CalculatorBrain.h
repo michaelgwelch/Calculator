@@ -8,11 +8,22 @@
 
 #import <Foundation/Foundation.h>
 
+typedef enum {
+    CalculatorAddOperation,
+    CalculatorSubtractOperation,
+    CalculatorMultiplyOperation,
+    CalculatorDivideOperation,
+    CalculatorPiOperation,
+    CalculatorSinOperation,
+    CalculatorCosOperation,
+    CalculatorSquareRootOperation,
+} CalculatorOperation;
+
 
 
 @interface CalculatorBrain : NSObject
 @property (nonatomic) BOOL operationError;
 - (void)reset;
 - (void)pushOperand:(double)operand;
-- (double)performOperation:(NSString *)operation;
+- (double)performOperation:(CalculatorOperation)operation;
 @end
