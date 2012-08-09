@@ -44,4 +44,9 @@
     return object;
 }
 
+- (void)clear
+{
+    [self.array removeAllObjects];
+}
+
 @end

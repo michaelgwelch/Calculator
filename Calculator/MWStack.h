@@ -12,5 +12,5 @@
 
 - (void)push:(id)object;
 - (id)pop;
-
+- (void)clear;
 @end
