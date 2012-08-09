@@ -16,6 +16,7 @@
 		E3448C0F15C44551007B2335 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E3448C0D15C44551007B2335 /* MainStoryboard.storyboard */; };
 		E3448C1215C44551007B2335 /* CalculatorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E3448C1115C44551007B2335 /* CalculatorViewController.m */; };
 		E39C4F5515C6C7E60096C11C /* CalculatorBrain.m in Sources */ = {isa = PBXBuildFile; fileRef = E39C4F5415C6C7E60096C11C /* CalculatorBrain.m */; };
+		E3A45AC815D47E9300DB8226 /* MWStack.m in Sources */ = {isa = PBXBuildFile; fileRef = E3A45AC715D47E9300DB8226 /* MWStack.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,8 @@
 		E3448C1115C44551007B2335 /* CalculatorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CalculatorViewController.m; sourceTree = "<group>"; };
 		E39C4F5315C6C7E60096C11C /* CalculatorBrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalculatorBrain.h; sourceTree = "<group>"; };
 		E39C4F5415C6C7E60096C11C /* CalculatorBrain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalculatorBrain.m; sourceTree = "<group>"; };
+		E3A45AC615D47E9300DB8226 /* MWStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWStack.h; sourceTree = "<group>"; };
+		E3A45AC715D47E9300DB8226 /* MWStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWStack.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +88,8 @@
 				E3448C0A15C44551007B2335 /* CalculatorAppDelegate.h */,
 				E3448C0B15C44551007B2335 /* CalculatorAppDelegate.m */,
 				E3448C0D15C44551007B2335 /* MainStoryboard.storyboard */,
+				E3A45AC615D47E9300DB8226 /* MWStack.h */,
+				E3A45AC715D47E9300DB8226 /* MWStack.m */,
 				E3448C1015C44551007B2335 /* CalculatorViewController.h */,
 				E3448C1115C44551007B2335 /* CalculatorViewController.m */,
 				E3448C0215C44551007B2335 /* Supporting Files */,
@@ -171,6 +176,7 @@
 				E3448C0C15C44551007B2335 /* CalculatorAppDelegate.m in Sources */,
 				E3448C1215C44551007B2335 /* CalculatorViewController.m in Sources */,
 				E39C4F5515C6C7E60096C11C /* CalculatorBrain.m in Sources */,
+				E3A45AC815D47E9300DB8226 /* MWStack.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
