@@ -14,7 +14,7 @@
 
 @interface CalculatorBrain()
 
-@property (nonatomic,strong,readonly) MWStack *operandStack;
+@property (nonatomic,strong,readonly) MWStack *programStack;
 
 @end
 
@@ -28,14 +28,14 @@
 - (void)reset
 {
     self.operationError = NO;
-    [self.operandStack clear];
+    [self.programStack clear];
 }
 
 - (void)pushOperand:(double)operand
 {
     if (self.operationError) return;
     
-    [self.operandStack push:[NSNumber numberWithDouble:operand]];
+    [self.programStack push:[NSNumber numberWithDouble:operand]];
 }
 
 
@@ -82,21 +82,21 @@
 
 //////////////////////// Private Implementation ///////////////////
 
-@synthesize operandStack = _operandStack;
+@synthesize programStack = _programStack;
 
 
-- (MWStack *)operandStack
+- (MWStack *)programStack
 {
-    if (!_operandStack) {
-        _operandStack = [[MWStack alloc] init];
+    if (!_programStack) {
+        _programStack = [[MWStack alloc] init];
     }
     
-    return _operandStack;
+    return _programStack;
 }
 
 - (double) popOperand
 {
-    NSNumber *operandObject = [self.operandStack pop];
+    NSNumber *operandObject = [self.programStack pop];
     return [operandObject doubleValue];
 }
 
