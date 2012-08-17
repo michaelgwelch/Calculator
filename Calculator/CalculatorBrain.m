@@ -140,7 +140,7 @@
             break;
             
         case CalculatorSquareRootOperation:
-            [self performSquareRootOperation:[self popOperand]];
+            result = [self performSquareRootOperation:[self popOperand]];
             break;
             
         default:
