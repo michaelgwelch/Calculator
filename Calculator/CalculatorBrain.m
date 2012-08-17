@@ -22,13 +22,68 @@
 
 @implementation CalculatorBrain
 
-@synthesize operandStack = _operandStack;
+
+///////////////////////// Public Interface Implementation //////////////////
 
 - (void)reset
 {
     self.operationError = NO;
     [self.operandStack clear];
 }
+
+- (void)pushOperand:(double)operand
+{
+    if (self.operationError) return;
+    
+    [self.operandStack push:[NSNumber numberWithDouble:operand]];
+}
+
+
+- (double)performOperation:(CalculatorOperation)operation
+{
+    if (self.operationError) return 0;
+    
+    double result;
+    
+    switch (operation) {
+        case CalculatorAddOperation:
+        case CalculatorSubtractOperation:
+        case CalculatorMultiplyOperation:
+        case CalculatorDivideOperation:
+            [self swapOperands];
+            result = [self performBinaryOperation:operation withFirstOperand:[self popOperand] andSecondOperand:[self popOperand]];
+            break;
+            
+        case CalculatorPiOperation:
+            result = M_PI;
+            break;
+            
+        case CalculatorCosOperation:
+            result = cos([self popOperand]);
+            break;
+            
+        case CalculatorSinOperation:
+            result = sin([self popOperand]);
+            break;
+            
+        case CalculatorSquareRootOperation:
+            result = [self performSquareRootOperation:[self popOperand]];
+            break;
+            
+        default:
+            result = 0; // any unknown operation eats 0 values and calculates 0
+            break;
+    }
+    
+    [self pushOperand:result];
+    return result;
+    
+}
+
+//////////////////////// Private Implementation ///////////////////
+
+@synthesize operandStack = _operandStack;
+
 
 - (MWStack *)operandStack
 {
@@ -100,57 +155,6 @@
     [self pushOperand:op2];
     [self pushOperand:op1];
     return;
-}
-
-///////////////////////// Interface Implementation //////////////////
-
-- (void)pushOperand:(double)operand
-{
-    if (self.operationError) return;
-    
-    [self.operandStack push:[NSNumber numberWithDouble:operand]];
-}
-
-
-- (double)performOperation:(CalculatorOperation)operation
-{
-    if (self.operationError) return 0;
-    
-    double result;
-    
-    switch (operation) {
-        case CalculatorAddOperation:
-        case CalculatorSubtractOperation:
-        case CalculatorMultiplyOperation:
-        case CalculatorDivideOperation:
-            [self swapOperands];
-            result = [self performBinaryOperation:operation withFirstOperand:[self popOperand] andSecondOperand:[self popOperand]];
-            break;
-            
-        case CalculatorPiOperation:
-            result = M_PI;
-            break;
-            
-        case CalculatorCosOperation:
-            result = cos([self popOperand]);
-            break;
-            
-        case CalculatorSinOperation:
-            result = sin([self popOperand]);
-            break;
-            
-        case CalculatorSquareRootOperation:
-            result = [self performSquareRootOperation:[self popOperand]];
-            break;
-            
-        default:
-            result = 0; // any unknown operation eats 0 values and calculates 0
-            break;
-    }
-    
-    [self pushOperand:result];
-    return result;
-    
 }
 
 @end
