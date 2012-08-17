@@ -38,11 +38,45 @@
     [self.programStack push:[NSNumber numberWithDouble:operand]];
 }
 
+- (id)program
+{
+    return [self.programStack state];
+}
 
 - (double)performOperation:(CalculatorOperation)operation
 {
     if (self.operationError) return 0;
+    NSValue *operationValue = [NSValue value: &operation withObjCType:@encode(enum _CalculatorOperation)];
+    [self.programStack push:operationValue];
+    return [CalculatorBrain runProgram:self.program];
+}
+
++ (double)runProgram:(id)program
+{
+    MWStack *programStack;
+    if ([program isKindOfClass:[NSArray class]]) {
+        programStack = [MWStack stackWithState:program];
+    }
     
+    return [CalculatorBrain popOperandOffTopOfStack:programStack];
+}
+
++ (double)popOperandOffTopOfStack:(MWStack *)programStack
+{
+    id topOfStack = [programStack pop];
+    if ([topOfStack isKindOfClass:[NSNumber class]]) {
+        return [topOfStack doubleValue];
+    } else if ([topOfStack isKindOfClass:[NSValue class]]) {
+        CalculatorOperation operation;
+        [topOfStack getValue: &operation];
+        return [CalculatorBrain performOperation:operation withStack:programStack];
+    }
+    return 0;
+}
+
++ (double)performOperation:(CalculatorOperation)operation
+                    withStack:(MWStack *)programStack
+{
     double result;
     
     switch (operation) {
@@ -50,8 +84,8 @@
         case CalculatorSubtractOperation:
         case CalculatorMultiplyOperation:
         case CalculatorDivideOperation:
-            [self swapOperands];
-            result = [self performBinaryOperation:operation withFirstOperand:[self popOperand] andSecondOperand:[self popOperand]];
+            [CalculatorBrain swapOperandsOnStack:programStack];
+            result = [CalculatorBrain performBinaryOperation:operation withFirstOperand:[CalculatorBrain popOperandOffTopOfStack:programStack] andSecondOperand:[CalculatorBrain popOperandOffTopOfStack:programStack]];
             break;
             
         case CalculatorPiOperation:
@@ -59,15 +93,15 @@
             break;
             
         case CalculatorCosOperation:
-            result = cos([self popOperand]);
+            result = cos([CalculatorBrain popOperandOffTopOfStack:programStack]);
             break;
             
         case CalculatorSinOperation:
-            result = sin([self popOperand]);
+            result = sin([CalculatorBrain popOperandOffTopOfStack:programStack]);
             break;
             
         case CalculatorSquareRootOperation:
-            result = [self performSquareRootOperation:[self popOperand]];
+            result = [CalculatorBrain performSquareRootOperation:[CalculatorBrain popOperandOffTopOfStack:programStack]];
             break;
             
         default:
@@ -75,7 +109,6 @@
             break;
     }
     
-    [self pushOperand:result];
     return result;
     
 }
@@ -100,7 +133,7 @@
     return [operandObject doubleValue];
 }
 
-- (double)performBinaryOperation:(CalculatorOperation)operation
++ (double)performBinaryOperation:(CalculatorOperation)operation
                 withFirstOperand:(double)firstOperand
                 andSecondOperand:(double)secondOperand
 {
@@ -119,8 +152,7 @@
             
         case CalculatorDivideOperation:
             if (secondOperand == 0) {
-                self.operationError = YES;
-                return 0;
+                return NAN;
             }
             return firstOperand / secondOperand;
             break;
@@ -132,13 +164,12 @@
 }
 
 
-- (double)performSquareRootOperation:(double)operand
++ (double)performSquareRootOperation:(double)operand
 {
     double result;
     if (operand < 0)
     {
-        result = 0;
-        self.operationError = YES;
+        result = NAN;
     }
     else
     {
@@ -148,12 +179,12 @@
 }
 
 // Swaps the order of the top two operands.
-- (void)swapOperands
++ (void)swapOperandsOnStack:(MWStack *)stack
 {
-    double op2 = [self popOperand];
-    double op1 = [self popOperand];
-    [self pushOperand:op2];
-    [self pushOperand:op1];
+    double op2 = [CalculatorBrain popOperandOffTopOfStack:stack];
+    double op1 = [CalculatorBrain popOperandOffTopOfStack:stack];
+    [stack push:[NSNumber numberWithDouble:op2]];
+    [stack push:[NSNumber numberWithDouble:op1]];
     return;
 }
 
