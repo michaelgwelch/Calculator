@@ -10,7 +10,7 @@
 
 @interface MWStack()
 
-@property (strong,readonly,nonatomic) NSMutableArray *array;
+@property (strong,nonatomic) NSMutableArray *array;
 
 @end
 
@@ -20,29 +20,29 @@
 
 @synthesize array = _array;
 
-- (id)state
+- (NSArray *)state
 {
     return [self.array copy];
 }
 
-+ (MWStack *)stackWithState:(id)state
+- (id)init
 {
-    MWStack *stack;
-    if ([state isKindOfClass:[self class]]) {
-        stack = [state mutableCopy];
-    }
-    return stack;
+    return [self initWithState:[[NSArray alloc] init]];
 }
 
-- (NSMutableArray *)array
+- (id)initWithState:(NSArray *)state
 {
-    if (!_array) {
-        _array = [[NSMutableArray alloc] init];
+    if (self == [super init])
+    {
+        [self setArray:[state mutableCopy]];
     }
-    
-    return _array;
+    return self;
 }
 
++ (MWStack *)stackWithState:(NSArray *)state
+{
+    return [[MWStack alloc] initWithState:state];
+}
 
 - (void)push:(id)object
 {
