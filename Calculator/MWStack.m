@@ -20,6 +20,20 @@
 
 @synthesize array = _array;
 
+- (id)state
+{
+    return [self.array copy];
+}
+
++ (MWStack *)stackWithState:(id)state
+{
+    MWStack *stack;
+    if ([state isKindOfClass:[self class]]) {
+        stack = [state mutableCopy];
+    }
+    return stack;
+}
+
 - (NSMutableArray *)array
 {
     if (!_array) {

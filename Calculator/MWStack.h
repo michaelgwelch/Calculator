@@ -9,7 +9,8 @@
 #import <Foundation/Foundation.h>
 
 @interface MWStack : NSObject
-
+- (id)state;
++ (MWStack *)stackWithState:(id)state;
 - (void)push:(id)object;
 - (id)pop;
 - (void)clear;
