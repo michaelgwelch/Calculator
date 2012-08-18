@@ -133,25 +133,25 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSString *description)
     withOperfandsFromStack:(MWStack *)programStack
 {
     double result;
-    double op2;
-    double op1;
     
     switch (operation) {
         case CalculatorAddOperation:
-        case CalculatorSubtractOperation:
         case CalculatorMultiplyOperation:
             result = [CalculatorBrain performBinaryOperation:operation
                                             withFirstOperand:[CalculatorBrain popOperandOffTopOfStack:programStack]
                                             andSecondOperand:[CalculatorBrain popOperandOffTopOfStack:programStack]];
             break;
 
+        case CalculatorSubtractOperation:
         case CalculatorDivideOperation:
-            op2 = [CalculatorBrain popOperandOffTopOfStack:programStack];
-            op1 = [CalculatorBrain popOperandOffTopOfStack:programStack];
+        {
+            double op2 = [CalculatorBrain popOperandOffTopOfStack:programStack];
+            double op1 = [CalculatorBrain popOperandOffTopOfStack:programStack];
             result = [CalculatorBrain performBinaryOperation:operation
                                             withFirstOperand:op1
                                             andSecondOperand:op2];
             break;
+        }
             
         case CalculatorPiOperation:
             result = M_PI;
