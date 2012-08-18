@@ -54,15 +54,23 @@ NSString *getOperationSymbol(CalculatorOperation operation)
     
 }
 
-NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSString *description)
+NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionArray)
 {
-    NSCharacterSet *additionAndSubtractionCharSet = [NSCharacterSet characterSetWithCharactersInString:@"+-"];
-    NSRange range = [description rangeOfCharacterFromSet:additionAndSubtractionCharSet];
-    if (range.location != NSNotFound) {
+    NSString *description = [descriptionArray objectAtIndex:1];
+    id operationValue = [descriptionArray objectAtIndex:0];
+    BOOL parenthesize = NO;
+    
+    if ([operationValue isKindOfClass:[NSValue class]]) {
+        CalculatorOperation operation;
+        [operationValue getValue:&operation];
+        parenthesize = (operation == CalculatorAddOperation || operation == CalculatorSubtractOperation);
+    }
+
+    if (parenthesize) {
         return [NSString stringWithFormat:@"(%@)", description];
     }
-    return description;
     
+    return description;
 }
 
 @interface CalculatorBrain()
@@ -193,26 +201,32 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSString *description)
         } else {
             programString = [@", " stringByAppendingString:programString];
         }
-        programString = [[CalculatorBrain descriptionOfTopOfStack:stack]
+        programString = [[[CalculatorBrain descriptionOfTopOfStack:stack] objectAtIndex:1]
                          stringByAppendingString:programString];
     }
     return programString;
 }
 
-+ (NSString *)descriptionOfTopOfStack:(MWStack *)stack
+// Returns a two element array. The first element is the operation encoded as NSValue
+// of the top level operation (if the top is an operation), else the first element is
+// empty string.
+// The second is the actual description
++ (NSArray *)descriptionOfTopOfStack:(MWStack *)stack
 {
     id element = [stack pop];
     if ([element isKindOfClass:[NSNumber class]]) {
-        return [NSString stringWithFormat:@"%g", [element doubleValue]];
+        return @[@"",[NSString stringWithFormat:@"%g", [element doubleValue]]];
     } else if ([element isKindOfClass:[NSValue class]]) {
         CalculatorOperation operation;
         [element getValue:&operation];
         return [CalculatorBrain descriptionOfOperation:operation withOperandsFromStack:stack];
     }
-    return @"0";
+    return @[@"", @"0"];
 }
 
-+ (NSString *)descriptionOfOperation:(CalculatorOperation)operation
+// Returns a two element array. The first element is the operation encoded as NSValue
+// The second is the actual description.
++ (NSArray *)descriptionOfOperation:(CalculatorOperation)operation
                withOperandsFromStack:(MWStack *)stack
 {
     switch (operation) {
@@ -220,21 +234,21 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSString *description)
         case CalculatorSubtractOperation:
         {
             NSString *descriptionOfOperation = getOperationSymbol(operation);
-            NSString *descriptionOfOperand2 = [CalculatorBrain descriptionOfTopOfStack:stack];
-            NSString *descriptionOfOperand1 = [CalculatorBrain descriptionOfTopOfStack:stack];
-            return [NSString stringWithFormat:@"%@ %@ %@", descriptionOfOperand1, descriptionOfOperation, descriptionOfOperand2];
+            NSString *descriptionOfOperand2 = [[CalculatorBrain descriptionOfTopOfStack:stack] objectAtIndex:1];
+            NSString *descriptionOfOperand1 = [[CalculatorBrain descriptionOfTopOfStack:stack] objectAtIndex:1];
+            return @[[NSValue value:&operation withObjCType:@encode(enum _CalculatorOperation)],[NSString stringWithFormat:@"%@ %@ %@", descriptionOfOperand1, descriptionOfOperation, descriptionOfOperand2]];
             break;
         }
-            
+ 
         case CalculatorMultiplyOperation:
         case CalculatorDivideOperation:
         {
             NSString *descriptionOfOperation = getOperationSymbol(operation);
-            NSString *descriptionOfOperand2 = [CalculatorBrain descriptionOfTopOfStack:stack];
-            descriptionOfOperand2 = parenthesizeForMultiplicationOrDivisionIfNeeded(descriptionOfOperand2);
-            NSString *descriptionOfOperand1 = [CalculatorBrain descriptionOfTopOfStack:stack];
-            descriptionOfOperand1 = parenthesizeForMultiplicationOrDivisionIfNeeded(descriptionOfOperand1);
-            return [NSString stringWithFormat:@"%@ %@ %@", descriptionOfOperand1, descriptionOfOperation, descriptionOfOperand2];
+            NSArray *descriptionArrayOfOperand2 = [CalculatorBrain descriptionOfTopOfStack:stack];
+            NSString *descriptionOfOperand2 = parenthesizeForMultiplicationOrDivisionIfNeeded(descriptionArrayOfOperand2);
+            NSArray *descriptionArrayOfOperand1 = [CalculatorBrain descriptionOfTopOfStack:stack];
+            NSString *descriptionOfOperand1 = parenthesizeForMultiplicationOrDivisionIfNeeded(descriptionArrayOfOperand1);
+            return @[[NSValue value:&operation withObjCType:@encode(enum _CalculatorOperation)],[NSString stringWithFormat:@"%@ %@ %@", descriptionOfOperand1, descriptionOfOperation, descriptionOfOperand2]];
             break;
         }
             
@@ -243,17 +257,17 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSString *description)
         case CalculatorSquareRootOperation:
         {
             NSString *descriptionOfOperation = getOperationSymbol(operation);
-            NSString *descriptionOfOperand = [CalculatorBrain descriptionOfTopOfStack:stack];
-            return [NSString stringWithFormat:@"%@(%@)", descriptionOfOperation, descriptionOfOperand];
+            NSString *descriptionOfOperand = [[CalculatorBrain descriptionOfTopOfStack:stack] objectAtIndex:1];
+            return @[[NSValue value:&operation withObjCType:@encode(enum _CalculatorOperation)],[NSString stringWithFormat:@"%@(%@)", descriptionOfOperation, descriptionOfOperand]];
         }
             
         case CalculatorPiOperation:
-            return @"π";
+            return @[[NSValue value:&operation withObjCType:@encode(enum _CalculatorOperation)], @"π"];
 
         default:
             break;
     }
-    return @"";
+    return @[@"", @""];
     
 }
 
