@@ -121,7 +121,7 @@
     self.userIsInMiddleOfEnteringNumber = NO;
     double value = [self.display.text doubleValue];
     [self.brain pushOperand:value];
-    self.tape.text = [self.tape.text stringByAppendingString:[NSString stringWithFormat:@" %g", value]];
+    self.tape.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
 }
 
 
@@ -141,7 +141,7 @@
     CalculatorOperation operation = [self calculateOperationFromTitle:sender.currentTitle];
     
     double result = [self.brain performOperation:operation];
-    self.tape.text = [self.tape.text stringByAppendingFormat:@" %@", sender.currentTitle];
+    self.tape.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
     if (self.brain.operationError)
     {
         self.display.text = @"Error";

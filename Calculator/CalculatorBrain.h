@@ -28,5 +28,5 @@ typedef enum _CalculatorOperation {
 - (void)pushOperand:(double)operand;
 - (double)performOperation:(CalculatorOperation)operation;
 + (double)runProgram:(id)program;
-//+ (NSString *)descriptionOfProgram:(id)program;
++ (NSString *)descriptionOfProgram:(id)program;
 @end

@@ -16,6 +16,55 @@ int iserror(double value)
     return (isnan(value) || isinf(value));
 }
 
+NSString *getOperationSymbol(CalculatorOperation operation)
+{
+    switch (operation) {
+        case CalculatorAddOperation:
+            return @"+";
+            break;
+            
+        case CalculatorSubtractOperation:
+            return @"-";
+            break;
+            
+        case CalculatorMultiplyOperation:
+            return @"*";
+            break;
+            
+        case CalculatorDivideOperation:
+            return @"/";
+            
+        case CalculatorCosOperation:
+            return @"cos";
+            
+        case CalculatorPiOperation:
+            return @"pi";
+            
+        case CalculatorSinOperation:
+            return @"sin";
+            
+        case CalculatorSquareRootOperation:
+            return @"sqrt";
+            
+        default:
+            break;
+    }
+    
+    return @"";
+    
+}
+
+NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSString *description)
+{
+    NSCharacterSet *additionAndSubtractionCharSet = [NSCharacterSet characterSetWithCharactersInString:@"+-"];
+    NSRange range = [description rangeOfCharacterFromSet:additionAndSubtractionCharSet];
+    if (range.location != NSNotFound) {
+        return [NSString stringWithFormat:@"(%@)", description];
+    }
+    return description;
+    
+}
+
 @interface CalculatorBrain()
 
 @property (nonatomic,strong,readonly) MWStack *programStack;
@@ -126,6 +175,85 @@ int iserror(double value)
     }
     
     return result;
+    
+}
+
++ (NSString *)descriptionOfProgram:(id)program
+{
+    MWStack *stack;
+    if ([program isKindOfClass:[NSArray class]]) {
+        stack = [MWStack stackWithState:[program mutableCopy]];
+    }
+    
+    NSString *programString = @"";
+    BOOL firstEntry = YES;
+    while (!stack.isEmpty) {
+        if (firstEntry) {
+            firstEntry = NO;
+        } else {
+            programString = [@", " stringByAppendingString:programString];
+        }
+        programString = [[CalculatorBrain descriptionOfTopOfStack:stack]
+                         stringByAppendingString:programString];
+    }
+    return programString;
+}
+
++ (NSString *)descriptionOfTopOfStack:(MWStack *)stack
+{
+    id element = [stack pop];
+    if ([element isKindOfClass:[NSNumber class]]) {
+        return [NSString stringWithFormat:@"%g", [element doubleValue]];
+    } else if ([element isKindOfClass:[NSValue class]]) {
+        CalculatorOperation operation;
+        [element getValue:&operation];
+        return [CalculatorBrain descriptionOfOperation:operation withOperandsFromStack:stack];
+    }
+    return @"";
+}
+
++ (NSString *)descriptionOfOperation:(CalculatorOperation)operation
+               withOperandsFromStack:(MWStack *)stack
+{
+    switch (operation) {
+        case CalculatorAddOperation:
+        case CalculatorSubtractOperation:
+        {
+            NSString *descriptionOfOperation = getOperationSymbol(operation);
+            NSString *descriptionOfOperand2 = [CalculatorBrain descriptionOfTopOfStack:stack];
+            NSString *descriptionOfOperand1 = [CalculatorBrain descriptionOfTopOfStack:stack];
+            return [NSString stringWithFormat:@"%@ %@ %@", descriptionOfOperand1, descriptionOfOperation, descriptionOfOperand2];
+            break;
+        }
+            
+        case CalculatorMultiplyOperation:
+        case CalculatorDivideOperation:
+        {
+            NSString *descriptionOfOperation = getOperationSymbol(operation);
+            NSString *descriptionOfOperand2 = [CalculatorBrain descriptionOfTopOfStack:stack];
+            descriptionOfOperand2 = parenthesizeForMultiplicationOrDivisionIfNeeded(descriptionOfOperand2);
+            NSString *descriptionOfOperand1 = [CalculatorBrain descriptionOfTopOfStack:stack];
+            descriptionOfOperand1 = parenthesizeForMultiplicationOrDivisionIfNeeded(descriptionOfOperand1);
+            return [NSString stringWithFormat:@"%@ %@ %@", descriptionOfOperand1, descriptionOfOperation, descriptionOfOperand2];
+            break;
+        }
+            
+        case CalculatorCosOperation:
+        case CalculatorSinOperation:
+        case CalculatorSquareRootOperation:
+        {
+            NSString *descriptionOfOperation = getOperationSymbol(operation);
+            NSString *descriptionOfOperand = [CalculatorBrain descriptionOfTopOfStack:stack];
+            return [NSString stringWithFormat:@"%@(%@)", descriptionOfOperation, descriptionOfOperand];
+        }
+            
+        case CalculatorPiOperation:
+            return @"π";
+
+        default:
+            break;
+    }
+    return @"";
     
 }
 
