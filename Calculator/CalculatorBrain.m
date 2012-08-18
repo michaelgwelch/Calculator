@@ -48,7 +48,9 @@
     if (self.operationError) return 0;
     NSValue *operationValue = [NSValue value: &operation withObjCType:@encode(enum _CalculatorOperation)];
     [self.programStack push:operationValue];
-    return [CalculatorBrain runProgram:self.program];
+    double result = [CalculatorBrain runProgram:self.program];
+    if (isnan(result)) self.operationError = YES;
+    return result;
 }
 
 + (double)runProgram:(id)program
