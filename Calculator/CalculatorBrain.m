@@ -11,6 +11,10 @@
 #import "MWStack.h"
 
 
+int iserror(double value)
+{
+    return (isnan(value) || isinf(value));
+}
 
 @interface CalculatorBrain()
 
@@ -49,7 +53,7 @@
     NSValue *operationValue = [NSValue value: &operation withObjCType:@encode(enum _CalculatorOperation)];
     [self.programStack push:operationValue];
     double result = [CalculatorBrain runProgram:self.program];
-    if (isnan(result)) self.operationError = YES;
+    if (iserror(result)) self.operationError = YES;
     return result;
 }
 
@@ -153,9 +157,6 @@
             break;
             
         case CalculatorDivideOperation:
-            if (secondOperand == 0) {
-                return NAN;
-            }
             return firstOperand / secondOperand;
             break;
             
@@ -168,16 +169,7 @@
 
 + (double)performSquareRootOperation:(double)operand
 {
-    double result;
-    if (operand < 0)
-    {
-        result = NAN;
-    }
-    else
-    {
-        result = sqrt(operand);
-    }
-    return result;
+    return sqrt(operand);
 }
 
 // Swaps the order of the top two operands.
