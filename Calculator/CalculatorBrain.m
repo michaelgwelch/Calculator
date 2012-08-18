@@ -209,7 +209,7 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSString *description)
         [element getValue:&operation];
         return [CalculatorBrain descriptionOfOperation:operation withOperandsFromStack:stack];
     }
-    return @"";
+    return @"0";
 }
 
 + (NSString *)descriptionOfOperation:(CalculatorOperation)operation
