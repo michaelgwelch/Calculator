@@ -15,4 +15,7 @@
 - (id)pop;
 - (void)clear;
 - (id)init;
+
+@property (nonatomic,readonly) NSUInteger count;
+@property (nonatomic,readonly) BOOL isEmpty;
 @end

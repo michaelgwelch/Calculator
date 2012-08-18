@@ -24,6 +24,18 @@
     [super tearDown];
 }
 
+- (void)testDefaultStackShoulbBeEmptySoCountShouldBeZero
+{
+    // Arrange
+    MWStack *stack = [[MWStack alloc] init];
+    
+    // Act
+    int count = stack.count;
+    
+    // Assert
+    STAssertEquals(count, 0, @"Count should be zero");
+}
+
 - (void)testDefaultStackShouldBeEmptySoPopShouldReturnNil
 {
     MWStack *stack = [[MWStack alloc] init];

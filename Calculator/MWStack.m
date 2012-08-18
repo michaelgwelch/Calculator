@@ -20,6 +20,16 @@
 
 @synthesize array = _array;
 
+- (BOOL)isEmpty
+{
+    return self.array.count == 0;
+}
+
+- (NSUInteger)count
+{
+    return self.array.count;
+}
+
 - (NSArray *)state
 {
     return [self.array copy];
