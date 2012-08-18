@@ -75,23 +75,33 @@ int iserror(double value)
     } else if ([topOfStack isKindOfClass:[NSValue class]]) {
         CalculatorOperation operation;
         [topOfStack getValue: &operation];
-        return [CalculatorBrain performOperation:operation withStack:programStack];
+        return [CalculatorBrain performOperation:operation withOperfandsFromStack:programStack];
     }
     return 0;
 }
 
 + (double)performOperation:(CalculatorOperation)operation
-                    withStack:(MWStack *)programStack
+    withOperfandsFromStack:(MWStack *)programStack
 {
     double result;
+    double op2;
+    double op1;
     
     switch (operation) {
         case CalculatorAddOperation:
         case CalculatorSubtractOperation:
         case CalculatorMultiplyOperation:
+            result = [CalculatorBrain performBinaryOperation:operation
+                                            withFirstOperand:[CalculatorBrain popOperandOffTopOfStack:programStack]
+                                            andSecondOperand:[CalculatorBrain popOperandOffTopOfStack:programStack]];
+            break;
+
         case CalculatorDivideOperation:
-            [CalculatorBrain swapOperandsOnStack:programStack];
-            result = [CalculatorBrain performBinaryOperation:operation withFirstOperand:[CalculatorBrain popOperandOffTopOfStack:programStack] andSecondOperand:[CalculatorBrain popOperandOffTopOfStack:programStack]];
+            op2 = [CalculatorBrain popOperandOffTopOfStack:programStack];
+            op1 = [CalculatorBrain popOperandOffTopOfStack:programStack];
+            result = [CalculatorBrain performBinaryOperation:operation
+                                            withFirstOperand:op1
+                                            andSecondOperand:op2];
             break;
             
         case CalculatorPiOperation:
@@ -107,7 +117,7 @@ int iserror(double value)
             break;
             
         case CalculatorSquareRootOperation:
-            result = [CalculatorBrain performSquareRootOperation:[CalculatorBrain popOperandOffTopOfStack:programStack]];
+            result = sqrt([CalculatorBrain popOperandOffTopOfStack:programStack]);
             break;
             
         default:
@@ -166,20 +176,5 @@ int iserror(double value)
     }
 }
 
-
-+ (double)performSquareRootOperation:(double)operand
-{
-    return sqrt(operand);
-}
-
-// Swaps the order of the top two operands.
-+ (void)swapOperandsOnStack:(MWStack *)stack
-{
-    double op2 = [CalculatorBrain popOperandOffTopOfStack:stack];
-    double op1 = [CalculatorBrain popOperandOffTopOfStack:stack];
-    [stack push:[NSNumber numberWithDouble:op2]];
-    [stack push:[NSNumber numberWithDouble:op1]];
-    return;
-}
 
 @end
