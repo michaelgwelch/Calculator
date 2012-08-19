@@ -140,6 +140,8 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
         CalculatorOperation operation;
         [topOfStack getValue: &operation];
         return [CalculatorBrain performOperation:operation withOperandsFromStack:programStack];
+    } else if ([topOfStack isKindOfClass:[NSString class]]) {
+        return 0;
     }
     return 0;
 }
@@ -222,6 +224,8 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
         CalculatorOperation operation;
         [element getValue:&operation];
         return [CalculatorBrain describeOperation:operation withOperandsFromStack:stack];
+    } else if ([element isKindOfClass:[NSString class]]) {
+        return @[@"",element];
     }
     return @[@"", @"0"];
 }
