@@ -195,10 +195,9 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
         if (firstEntry) {
             firstEntry = NO;
         } else {
-            programString = [@", " stringByAppendingString:programString];
+            programString = [programString stringByAppendingString:@", "];
         }
-        programString = [[[CalculatorBrain descriptionOfTopOfStack:stack] objectAtIndex:1]
-                         stringByAppendingString:programString];
+        programString = [programString stringByAppendingString:[[CalculatorBrain descriptionOfTopOfStack:stack] objectAtIndex:1]];
     }
     return programString;
 }
