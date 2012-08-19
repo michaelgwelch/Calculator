@@ -132,24 +132,20 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
     } else if ([topOfStack isKindOfClass:[NSValue class]]) {
         CalculatorOperation operation;
         [topOfStack getValue: &operation];
-        return [CalculatorBrain performOperation:operation withOperfandsFromStack:programStack];
+        return [CalculatorBrain performOperation:operation withOperandsFromStack:programStack];
     }
     return 0;
 }
 
 + (double)performOperation:(CalculatorOperation)operation
-    withOperfandsFromStack:(MWStack *)programStack
+    withOperandsFromStack:(MWStack *)programStack
 {
     double result;
     
     switch (operation) {
+            
         case CalculatorAddOperation:
         case CalculatorMultiplyOperation:
-            result = [CalculatorBrain performBinaryOperation:operation
-                                            withFirstOperand:[CalculatorBrain popOperandOffTopOfStack:programStack]
-                                            andSecondOperand:[CalculatorBrain popOperandOffTopOfStack:programStack]];
-            break;
-
         case CalculatorSubtractOperation:
         case CalculatorDivideOperation:
         {
