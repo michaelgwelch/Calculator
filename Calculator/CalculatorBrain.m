@@ -99,6 +99,13 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
     [self.programStack push:[NSNumber numberWithDouble:operand]];
 }
 
+- (void)pushVariableOperand:(NSString *)operand
+{
+    if (self.operationError) return;
+    
+    [self.programStack push:operand];
+}
+
 - (id)program
 {
     return [self.programStack state];

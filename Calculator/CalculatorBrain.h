@@ -26,6 +26,7 @@ typedef enum _CalculatorOperation {
 @property (readonly) id program;
 - (void)reset;
 - (void)pushOperand:(double)operand;
+- (void)pushVariableOperand:(NSString *)operand;
 - (double)performOperation:(CalculatorOperation)operation;
 + (double)runProgram:(id)program;
 + (NSString *)descriptionOfProgram:(id)program;
