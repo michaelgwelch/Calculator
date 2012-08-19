@@ -138,7 +138,7 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
 }
 
 + (double)performOperation:(CalculatorOperation)operation
-    withOperandsFromStack:(MWStack *)programStack
+     withOperandsFromStack:(MWStack *)programStack
 {
     double result;
     
@@ -215,14 +215,14 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
     } else if ([element isKindOfClass:[NSValue class]]) {
         CalculatorOperation operation;
         [element getValue:&operation];
-        return [CalculatorBrain descriptionOfOperation:operation withOperandsFromStack:stack];
+        return [CalculatorBrain describeOperation:operation withOperandsFromStack:stack];
     }
     return @[@"", @"0"];
 }
 
 // Returns a two element array. The first element is the operation encoded as NSValue
 // The second is the actual description.
-+ (NSArray *)descriptionOfOperation:(CalculatorOperation)operation
++ (NSArray *)describeOperation:(CalculatorOperation)operation
                withOperandsFromStack:(MWStack *)stack
 {
     switch (operation) {
