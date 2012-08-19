@@ -16,6 +16,7 @@
 @property (nonatomic, readonly) BOOL brainError;
 @property (nonatomic, strong, readonly) NSDictionary *operationsForTitles;
 @property (nonatomic, readonly) BOOL userHasEnteredDecimalPoint;
+@property (nonatomic, strong) NSDictionary *testVariableValues;
 
 @end
 
@@ -26,6 +27,7 @@
 @synthesize userIsInMiddleOfEnteringNumber = _userIsInMiddleOfEnteringNumber;
 @synthesize brain = _brain;
 @synthesize operationsForTitles = _operationsForTitles;
+@synthesize testVariableValues = _testVariableValues;
 
 
 - (NSDictionary *)operationsForTitles
@@ -43,6 +45,19 @@
     
     return _operationsForTitles;
     
+}
+
+- (NSDictionary *)testVariableValues
+{
+    if (!_operationsForTitles) {
+        _operationsForTitles = @{};
+    }
+    return _testVariableValues;
+}
+
+- (void)setTestVariableValues:(NSDictionary *)testVariableValues
+{
+    _testVariableValues = testVariableValues;
 }
 
 - (CalculatorBrain *)brain
@@ -124,6 +139,18 @@
     self.tape.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
 }
 
+- (IBAction)variablePressed:(UIButton *)sender
+{
+    if (self.brainError) return;
+    if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
+
+    [self.brain pushVariableOperand:sender.currentTitle];
+    self.tape.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
+    id valueForVariable = [self.testVariableValues objectForKey:sender.currentTitle];
+    if (valueForVariable) self.display.text = [NSString stringWithFormat:@"%g", [valueForVariable doubleValue]];
+    else self.display.text = @"0";
+    
+}
 
 
 
