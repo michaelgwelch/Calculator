@@ -40,6 +40,7 @@
     return [self initWithState:[[NSArray alloc] init]];
 }
 
+// designated initializer
 - (id)initWithState:(NSArray *)state
 {
     if (self == [super init])
