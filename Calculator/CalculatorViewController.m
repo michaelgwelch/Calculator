@@ -11,12 +11,14 @@
 
 @interface CalculatorViewController ()
  
-@property (nonatomic) BOOL userIsInMiddleOfEnteringNumber;
+@property (nonatomic, readonly) BOOL userIsInMiddleOfEnteringNumber;
 @property (nonatomic, strong) CalculatorBrain *brain;
 @property (nonatomic, readonly) BOOL brainError;
 @property (nonatomic, strong, readonly) NSDictionary *operationsForTitles;
 @property (nonatomic, readonly) BOOL userHasEnteredDecimalPoint;
 @property (nonatomic, strong) NSDictionary *testVariableValues;
+@property (nonatomic, strong) NSString* numberInProgress;
+@property (nonatomic) double currentResult;
 
 @end
 
@@ -24,11 +26,28 @@
 
 @synthesize display = _display;
 @synthesize tape = _tape;
-@synthesize userIsInMiddleOfEnteringNumber = _userIsInMiddleOfEnteringNumber;
 @synthesize brain = _brain;
 @synthesize operationsForTitles = _operationsForTitles;
 @synthesize testVariableValues = _testVariableValues;
+@synthesize numberInProgress = _numberInProgress;
+@synthesize currentResult = _currentResult;
 
+- (NSString *)numberInProgress
+{
+    if (!_numberInProgress) {
+        _numberInProgress = @"";
+    }
+    return _numberInProgress;
+}
+
+- (void)setNumberInProgress:(NSString *)numberInProgress
+{
+    if (!numberInProgress) {
+        _numberInProgress = @"";
+    } else {
+        _numberInProgress = numberInProgress;
+    }
+}
 
 - (NSDictionary *)operationsForTitles
 {
@@ -49,8 +68,8 @@
 
 - (NSDictionary *)testVariableValues
 {
-    if (!_operationsForTitles) {
-        _operationsForTitles = @{};
+    if (!_testVariableValues) {
+        _testVariableValues = @{};
     }
     return _testVariableValues;
 }
@@ -75,30 +94,93 @@
 
 - (BOOL)userHasEnteredDecimalPoint
 {
-    return ([self.display.text rangeOfString:@"."].location != NSNotFound);
+    return ([self.numberInProgress rangeOfString:@"."].location != NSNotFound);
 }
 
-- (void)updateDisplayByAppendingString:(NSString *)string
+// Updates the user interface
+// if user is entering a number then displayText should
+// be supplied. If not the diplay will be filled with result
+// of running current program. The tape and variableValues
+// will be filled as well.
+- (void)updateUI
 {
-    self.display.text = [self.display.text stringByAppendingFormat:@"%@", string];
+    if (self.brainError) {
+        self.display.text = @"Error";
+        return;
+    }
+    
+    if (self.userIsInMiddleOfEnteringNumber) {
+        self.display.text = self.numberInProgress;
+    } else {
+        self.display.text = [NSString stringWithFormat:@"%g", self.currentResult];
+        self.tape.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
+    }
 }
 
-- (void)updateDisplayByAppendingString:(NSString *)format
-                          withArgument:(id)arg
+- (BOOL)userIsInMiddleOfEnteringNumber
 {
-    [self updateDisplayByAppendingString:[NSString stringWithFormat:format, arg]];
+    return ![self.numberInProgress isEqualToString:@""];
+}
+
+- (CalculatorOperation)calculateOperationFromTitle:(NSString *)title
+{
+    NSNumber *operationObject = [self.operationsForTitles objectForKey:title];
+    return [operationObject intValue];
+}
+
+///////////  PUBLIC METHODS THAT UPDATE UI
+
+//// Methods that impact tape, variables used, and result field
+- (IBAction)operationPressed:(UIButton *)sender
+{
+    if (self.brainError) return;
+    if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
+    
+    
+    self.currentResult = [self.brain performOperation:[self calculateOperationFromTitle:sender.currentTitle]];
+    [self updateUI];
+}
+
+- (IBAction)variablePressed:(UIButton *)sender
+{
+    if (self.brainError) return;
+    if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
+    
+    [self.brain pushVariableOperand:sender.currentTitle];
+    [self updateUI];
 }
 
 
-
-- (void)updateDisplayWithResult:(double)result
+// This method updates UI but also is called from methods
+// that will update UI. Potential clean up location here.
+// Extract out the logic from the request for update.
+- (IBAction)enterPressed
 {
-    self.display.text = [NSString stringWithFormat:@"%g", result];
+    if (self.brainError) return;
+    
+    double value = [self.numberInProgress doubleValue];
+    [self.brain pushOperand:value];
+    self.numberInProgress = @"";
+    [self updateUI];
 }
 
-- (void)updateDisplayWithString:(NSString *)string
+- (IBAction)clearPressed
 {
-    self.display.text = string;
+    [self.brain reset];
+    self.numberInProgress = @"";
+    self.currentResult = 0;
+    [self updateUI];
+}
+
+//// Methods that only impact result field
+
+- (IBAction)decimalPointPressed
+{
+    if (self.brainError) return;
+    if (self.userHasEnteredDecimalPoint) return;
+    
+    self.numberInProgress = [self.numberInProgress stringByAppendingString:@"."];
+    [self updateUI];
 }
 
 - (IBAction)digitPressed:(UIButton *)sender
@@ -109,89 +191,18 @@
     
     if (self.userIsInMiddleOfEnteringNumber)
     {
-        [self updateDisplayByAppendingString:@"%@" withArgument:digit];
+        self.numberInProgress = [self.numberInProgress stringByAppendingString:digit];
     }
     else
     {
-        [self updateDisplayWithString:digit];
-        self.userIsInMiddleOfEnteringNumber = YES;
+        self.numberInProgress = digit;
     }
     
-}
-
-
-- (IBAction)decimalPointPressed
-{
-    if (self.brainError) return;
-    if (self.userHasEnteredDecimalPoint) return;
-    
-    [self updateDisplayByAppendingString:@"."];
-    self.userIsInMiddleOfEnteringNumber = YES;
-}
-
-- (IBAction)enterPressed
-{
-    if (self.brainError) return;
-    
-    self.userIsInMiddleOfEnteringNumber = NO;
-    double value = [self.display.text doubleValue];
-    [self.brain pushOperand:value];
-    self.tape.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
-}
-
-- (IBAction)variablePressed:(UIButton *)sender
-{
-    if (self.brainError) return;
-    if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
-
-    [self.brain pushVariableOperand:sender.currentTitle];
-    self.tape.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
-    id valueForVariable = [self.testVariableValues objectForKey:sender.currentTitle];
-    if (valueForVariable) self.display.text = [NSString stringWithFormat:@"%g", [valueForVariable doubleValue]];
-    else self.display.text = @"0";
-    
+    [self updateUI];
 }
 
 
 
-- (CalculatorOperation)calculateOperationFromTitle:(NSString *)title
-{
-    NSNumber *operationObject = [self.operationsForTitles objectForKey:title];
-    return [operationObject intValue];
-}
-
-- (IBAction)operationPressed:(UIButton *)sender
-{
-    if (self.brainError) return;
-    if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
-    
-    CalculatorOperation operation = [self calculateOperationFromTitle:sender.currentTitle];
-    
-    double result = [self.brain performOperation:operation];
-    self.tape.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
-    if (self.brain.operationError)
-    {
-        self.display.text = @"Error";
-    }
-    else
-    {
-        [self updateDisplayWithResult:result];
-    }
-    
-}
-
-- (void)resetDisplay
-{
-    self.userIsInMiddleOfEnteringNumber = NO;
-    self.display.text = @"0";
-    self.tape.text = @"";
-}
-
-- (IBAction)clearPressed
-{
-    [self.brain reset];
-    [self resetDisplay];
-}
 
 
 
