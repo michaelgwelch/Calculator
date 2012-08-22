@@ -11,10 +11,7 @@
 #import "MWStack.h"
 
 
-int iserror(double value)
-{
-    return (isnan(value) || isinf(value));
-}
+
 
 NSString *getOperationSymbol(CalculatorOperation operation)
 {
@@ -88,21 +85,16 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
 
 - (void)reset
 {
-    self.operationError = NO;
     [self.programStack clear];
 }
 
 - (void)pushOperand:(double)operand
 {
-    if (self.operationError) return;
-    
     [self.programStack push:[NSNumber numberWithDouble:operand]];
 }
 
 - (void)pushVariableOperand:(NSString *)operand
 {
-    if (self.operationError) return;
-    
     [self.programStack push:operand];
 }
 
@@ -113,11 +105,9 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
 
 - (double)performOperation:(CalculatorOperation)operation
 {
-    if (self.operationError) return 0;
     NSValue *operationValue = [NSValue value: &operation withObjCType:@encode(enum _CalculatorOperation)];
     [self.programStack push:operationValue];
     double result = [CalculatorBrain runProgram:self.program];
-    if (iserror(result)) self.operationError = YES;
     return result;
 }
 

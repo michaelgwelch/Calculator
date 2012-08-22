@@ -22,7 +22,6 @@ typedef enum _CalculatorOperation {
 
 
 @interface CalculatorBrain : NSObject
-@property (nonatomic) BOOL operationError;
 @property (readonly) id program;
 - (void)reset;
 - (void)pushOperand:(double)operand;

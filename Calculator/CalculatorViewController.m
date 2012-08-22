@@ -9,6 +9,11 @@
 #import "CalculatorViewController.h"
 #import "CalculatorBrain.h"
 
+int iserror(double value)
+{
+    return (isnan(value) || isinf(value));
+}
+
 @interface CalculatorViewController ()
  
 @property (nonatomic, readonly) BOOL userIsInMiddleOfEnteringNumber;
@@ -89,7 +94,7 @@
 
 - (BOOL)brainError
 {
-    return self.brain.operationError;
+    return iserror(self.currentResult);
 }
 
 - (BOOL)userHasEnteredDecimalPoint
