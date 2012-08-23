@@ -15,10 +15,11 @@ int iserror(double value)
 }
 
 @interface CalculatorViewController ()
- 
+
+// only set to true if at least one variable was entered.
+@property (nonatomic) BOOL userIsEnteringProgram;
 @property (nonatomic, readonly) BOOL userIsInMiddleOfEnteringNumber;
 @property (nonatomic, strong) CalculatorBrain *brain;
-@property (nonatomic, readonly) BOOL brainError;
 @property (nonatomic, strong, readonly) NSDictionary *operationsForTitles;
 @property (nonatomic, readonly) BOOL userHasEnteredDecimalPoint;
 @property (nonatomic, strong) NSDictionary *testVariableValues;
@@ -31,11 +32,13 @@ int iserror(double value)
 
 @synthesize display = _display;
 @synthesize tape = _tape;
+@synthesize usedVariableValues = _usedVariableValues;
 @synthesize brain = _brain;
 @synthesize operationsForTitles = _operationsForTitles;
 @synthesize testVariableValues = _testVariableValues;
 @synthesize numberInProgress = _numberInProgress;
 @synthesize currentResult = _currentResult;
+@synthesize userIsEnteringProgram = _userIsEnteringProgram;
 
 - (NSString *)numberInProgress
 {
@@ -71,18 +74,6 @@ int iserror(double value)
     
 }
 
-- (NSDictionary *)testVariableValues
-{
-    if (!_testVariableValues) {
-        _testVariableValues = @{};
-    }
-    return _testVariableValues;
-}
-
-- (void)setTestVariableValues:(NSDictionary *)testVariableValues
-{
-    _testVariableValues = testVariableValues;
-}
 
 - (CalculatorBrain *)brain
 {
@@ -90,11 +81,6 @@ int iserror(double value)
         _brain = [[CalculatorBrain alloc] init];
     }
     return _brain;
-}
-
-- (BOOL)brainError
-{
-    return iserror(self.currentResult);
 }
 
 - (BOOL)userHasEnteredDecimalPoint
@@ -109,9 +95,9 @@ int iserror(double value)
 // will be filled as well.
 - (void)updateUI
 {
-    if (self.brainError) {
-        self.display.text = @"Error";
-        return;
+    if (self.userIsEnteringProgram)
+    {
+        self.testVariableValues = nil;
     }
     
     if (self.userIsInMiddleOfEnteringNumber) {
@@ -119,7 +105,32 @@ int iserror(double value)
     } else {
         self.display.text = [NSString stringWithFormat:@"%g", self.currentResult];
         self.tape.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
+        self.usedVariableValues.text = [CalculatorViewController describeUsedVariableValuesInProgram:self.brain.program usingVariableValues:self.testVariableValues];
     }
+}
+
++ (NSString *)describeUsedVariableValuesInProgram:(id)program
+                              usingVariableValues:(NSDictionary *)variableValues
+{
+    NSString *key;
+    NSString *result = @"";
+    BOOL firstUsedVariable = YES;
+    NSSet *variablesInProgram = [CalculatorBrain variablesUsedInProgram:program];
+    for (key in variablesInProgram)
+    {
+        
+        if (!firstUsedVariable)
+        {
+            result = [result stringByAppendingString:@", "];
+        }
+        else
+        {
+            firstUsedVariable = NO;
+        }
+        double value = [[variableValues objectForKey:key] doubleValue];
+        result = [result stringByAppendingFormat:@"%@ = %g", key, value];
+    }
+    return result;
 }
 
 - (BOOL)userIsInMiddleOfEnteringNumber
@@ -138,9 +149,7 @@ int iserror(double value)
 //// Methods that impact tape, variables used, and result field
 - (IBAction)operationPressed:(UIButton *)sender
 {
-    if (self.brainError) return;
     if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
-    
     
     self.currentResult = [self.brain performOperation:[self calculateOperationFromTitle:sender.currentTitle]];
     [self updateUI];
@@ -148,10 +157,11 @@ int iserror(double value)
 
 - (IBAction)variablePressed:(UIButton *)sender
 {
-    if (self.brainError) return;
     if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
     
+    self.userIsEnteringProgram = YES;
     [self.brain pushVariableOperand:sender.currentTitle];
+    self.currentResult = [CalculatorBrain runProgram:self.brain.program];
     [self updateUI];
 }
 
@@ -160,9 +170,7 @@ int iserror(double value)
 // that will update UI. Potential clean up location here.
 // Extract out the logic from the request for update.
 - (IBAction)enterPressed
-{
-    if (self.brainError) return;
-    
+{    
     double value = [self.numberInProgress doubleValue];
     [self.brain pushOperand:value];
     self.numberInProgress = @"";
@@ -174,6 +182,7 @@ int iserror(double value)
     [self.brain reset];
     self.numberInProgress = @"";
     self.currentResult = 0;
+    self.testVariableValues = @{};
     [self updateUI];
 }
 
@@ -181,17 +190,14 @@ int iserror(double value)
 
 - (IBAction)decimalPointPressed
 {
-    if (self.brainError) return;
     if (self.userHasEnteredDecimalPoint) return;
-    
+
     self.numberInProgress = [self.numberInProgress stringByAppendingString:@"."];
     [self updateUI];
 }
 
 - (IBAction)digitPressed:(UIButton *)sender
 {
-    if (self.brainError) return;
-    
     NSString *digit = sender.currentTitle;
     
     if (self.userIsInMiddleOfEnteringNumber)
@@ -206,9 +212,49 @@ int iserror(double value)
     [self updateUI];
 }
 
+- (IBAction)testButtonPressed:(UIButton *)sender
+{
+    if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
+    self.userIsEnteringProgram = NO;
+
+    if ([sender.currentTitle isEqualToString:@"Test 1"])
+    {
+        self.testVariableValues =
+        @{
+        @"a" : [NSNumber numberWithDouble:105.17],
+        @"b" : [NSNumber numberWithDouble:12.3],
+        @"x" : [NSNumber numberWithDouble:-3.57]
+        };
+    }
+    else if ([sender.currentTitle isEqualToString:@"Test 2"])
+    {
+        self.testVariableValues =
+        @{
+        @"a" : [NSNumber numberWithDouble:17],
+        @"b" : [NSNumber numberWithDouble: -12],
+        @"c" : [NSNumber numberWithDouble:45]
+        };
+    }
+    else if ([sender.currentTitle isEqualToString:@"Test 3"])
+    {
+        self.testVariableValues =
+        @{
+        @"a" : [NSNumber numberWithDouble:1],
+        @"b" : [NSNumber numberWithDouble: -2],
+        @"c" : [NSNumber numberWithDouble:3]
+        };
+    }
+    
+    self.currentResult = [CalculatorBrain runProgram:self.brain.program usingVariableValues:self.testVariableValues];
+    [self updateUI];
+}
 
 
-
-
-
+- (void)viewDidUnload {
+    self.usedVariableValues = nil;
+    self.display = nil;
+    self.tape = nil;
+    
+    [super viewDidUnload];
+}
 @end

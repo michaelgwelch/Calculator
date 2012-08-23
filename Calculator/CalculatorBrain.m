@@ -113,15 +113,23 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
 
 + (double)runProgram:(id)program
 {
+    return [self runProgram:program usingVariableValues:@{}];
+}
+
++ (double)runProgram:(id)program
+ usingVariableValues:(NSDictionary *)variableValues
+{
     MWStack *programStack;
     if ([program isKindOfClass:[NSArray class]]) {
         programStack = [MWStack stackWithState:program];
     }
     
-    return [CalculatorBrain popOperandOffTopOfStack:programStack];
+    return [CalculatorBrain popOperandOffTopOfStack:programStack
+                                usingVariableValues:variableValues];
 }
 
 + (double)popOperandOffTopOfStack:(MWStack *)programStack
+              usingVariableValues:variableValues
 {
     id topOfStack = [programStack pop];
     if ([topOfStack isKindOfClass:[NSNumber class]]) {
@@ -129,15 +137,17 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
     } else if ([topOfStack isKindOfClass:[NSValue class]]) {
         CalculatorOperation operation;
         [topOfStack getValue: &operation];
-        return [CalculatorBrain performOperation:operation withOperandsFromStack:programStack];
+        return [CalculatorBrain performOperation:operation withOperandsFromStack:programStack usingVariableValues:variableValues];
     } else if ([topOfStack isKindOfClass:[NSString class]]) {
-        return 0;
+        id value = [variableValues objectForKey:topOfStack];
+        if (value) return [value doubleValue];
     }
     return 0;
 }
 
 + (double)performOperation:(CalculatorOperation)operation
      withOperandsFromStack:(MWStack *)programStack
+       usingVariableValues:(NSDictionary *)variableValues
 {
     double result;
     
@@ -148,8 +158,8 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
         case CalculatorSubtractOperation:
         case CalculatorDivideOperation:
         {
-            double op2 = [CalculatorBrain popOperandOffTopOfStack:programStack];
-            double op1 = [CalculatorBrain popOperandOffTopOfStack:programStack];
+            double op2 = [CalculatorBrain popOperandOffTopOfStack:programStack usingVariableValues:variableValues];
+            double op1 = [CalculatorBrain popOperandOffTopOfStack:programStack usingVariableValues:variableValues];
             result = [CalculatorBrain performBinaryOperation:operation
                                             withFirstOperand:op1
                                             andSecondOperand:op2];
@@ -161,15 +171,15 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
             break;
             
         case CalculatorCosOperation:
-            result = cos([CalculatorBrain popOperandOffTopOfStack:programStack]);
+            result = cos([CalculatorBrain popOperandOffTopOfStack:programStack usingVariableValues:variableValues]);
             break;
             
         case CalculatorSinOperation:
-            result = sin([CalculatorBrain popOperandOffTopOfStack:programStack]);
+            result = sin([CalculatorBrain popOperandOffTopOfStack:programStack usingVariableValues:variableValues]);
             break;
             
         case CalculatorSquareRootOperation:
-            result = sqrt([CalculatorBrain popOperandOffTopOfStack:programStack]);
+            result = sqrt([CalculatorBrain popOperandOffTopOfStack:programStack usingVariableValues:variableValues]);
             break;
             
         default:
@@ -199,6 +209,22 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
         programString = [programString stringByAppendingString:[[CalculatorBrain descriptionOfTopOfStack:stack] objectAtIndex:1]];
     }
     return programString;
+}
+
++ (NSSet *)variablesUsedInProgram:(id)program
+{
+    if (![program isKindOfClass:[NSArray class]]) return nil;
+    
+    NSMutableSet *variablesInProgram = [[NSMutableSet alloc] init];
+    NSArray *entries = program;
+    for (id entry in entries)
+    {
+        if ([entry isKindOfClass:[NSString class]])
+        {
+            [variablesInProgram addObject:entry];
+        }
+    }
+    return [variablesInProgram copy];
 }
 
 // Returns a two element array. The first element is the operation encoded as NSValue
