@@ -6,6 +6,11 @@
 //  Copyright (c) 2012 Michael Welch. All rights reserved.
 //
 
+
+// TODO: after running a program. As soon as I enter anything else, the program runs
+// with last set of values. Perhaps this is desired behavior. So that you can set the values
+// first, and then enter a program.
+
 #import "CalculatorViewController.h"
 #import "CalculatorBrain.h"
 
@@ -17,7 +22,7 @@ int iserror(double value)
 @interface CalculatorViewController ()
 
 // only set to true if at least one variable was entered.
-@property (nonatomic) BOOL userIsEnteringProgram;
+@property (nonatomic) BOOL userHasRequestedToRunProgramWithVariables;
 @property (nonatomic, readonly) BOOL userIsInMiddleOfEnteringNumber;
 @property (nonatomic, strong) CalculatorBrain *brain;
 @property (nonatomic, strong, readonly) NSDictionary *operationsForTitles;
@@ -38,7 +43,7 @@ int iserror(double value)
 @synthesize testVariableValues = _testVariableValues;
 @synthesize numberInProgress = _numberInProgress;
 @synthesize currentResult = _currentResult;
-@synthesize userIsEnteringProgram = _userIsEnteringProgram;
+@synthesize userHasRequestedToRunProgramWithVariables = _userHasRequestedToRunProgramWithVariables;
 
 - (NSString *)numberInProgress
 {
@@ -95,7 +100,7 @@ int iserror(double value)
 // will be filled as well.
 - (void)updateUI
 {
-    if (self.userIsEnteringProgram)
+    if (!self.userHasRequestedToRunProgramWithVariables)
     {
         self.testVariableValues = nil;
     }
@@ -159,7 +164,7 @@ int iserror(double value)
 {
     if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
     
-    self.userIsEnteringProgram = YES;
+    self.userHasRequestedToRunProgramWithVariables = NO;
     [self.brain pushVariableOperand:sender.currentTitle];
     self.currentResult = [CalculatorBrain runProgram:self.brain.program];
     [self updateUI];
@@ -215,7 +220,7 @@ int iserror(double value)
 - (IBAction)testButtonPressed:(UIButton *)sender
 {
     if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
-    self.userIsEnteringProgram = NO;
+    self.userHasRequestedToRunProgramWithVariables = YES;
 
     if ([sender.currentTitle isEqualToString:@"Test 1"])
     {
@@ -249,6 +254,21 @@ int iserror(double value)
     [self updateUI];
 }
 
+- (IBAction)undoPressed
+{
+    if (self.userIsInMiddleOfEnteringNumber)
+    {
+        self.numberInProgress = [self.numberInProgress substringToIndex:
+                                 [self.numberInProgress length]-1];
+    }
+    else
+    {
+        [self.brain pop];
+        self.userHasRequestedToRunProgramWithVariables = NO;
+        self.currentResult = [CalculatorBrain runProgram:self.brain.program];
+    }
+    [self updateUI];
+}
 
 - (void)viewDidUnload {
     self.usedVariableValues = nil;
