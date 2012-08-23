@@ -24,6 +24,7 @@ typedef enum _CalculatorOperation {
 @interface CalculatorBrain : NSObject
 @property (readonly) id program;
 - (void)reset;
+- (id)pop;
 - (void)pushOperand:(double)operand;
 - (void)pushVariableOperand:(NSString *)operand;
 - (double)performOperation:(CalculatorOperation)operation;

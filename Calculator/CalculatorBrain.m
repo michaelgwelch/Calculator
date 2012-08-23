@@ -307,9 +307,14 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
     return _programStack;
 }
 
+- (id)pop
+{
+    return [self.programStack pop];
+}
+
 - (double) popOperand
 {
-    NSNumber *operandObject = [self.programStack pop];
+    NSNumber *operandObject = [self pop];
     return [operandObject doubleValue];
 }
 
