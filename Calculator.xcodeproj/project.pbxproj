@@ -20,6 +20,8 @@
 		E39A8BCA15E932B4003D7D92 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3448BFD15C44551007B2335 /* Foundation.framework */; };
 		E39A8BD015E932B4003D7D92 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E39A8BCE15E932B4003D7D92 /* InfoPlist.strings */; };
 		E39A8BD915E93305003D7D92 /* MWStack.m in Sources */ = {isa = PBXBuildFile; fileRef = E3A45AC715D47E9300DB8226 /* MWStack.m */; };
+		E39A8BE415E93448003D7D92 /* CalculatorBrainTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E39A8BE315E93448003D7D92 /* CalculatorBrainTests.m */; };
+		E39A8BE615E93454003D7D92 /* CalculatorBrain.m in Sources */ = {isa = PBXBuildFile; fileRef = E39C4F5415C6C7E60096C11C /* CalculatorBrain.m */; };
 		E39C4F5515C6C7E60096C11C /* CalculatorBrain.m in Sources */ = {isa = PBXBuildFile; fileRef = E39C4F5415C6C7E60096C11C /* CalculatorBrain.m */; };
 		E3A45AC815D47E9300DB8226 /* MWStack.m in Sources */ = {isa = PBXBuildFile; fileRef = E3A45AC715D47E9300DB8226 /* MWStack.m */; };
 /* End PBXBuildFile section */
@@ -45,6 +47,8 @@
 		E39A8BCD15E932B4003D7D92 /* UnitTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UnitTests-Info.plist"; sourceTree = "<group>"; };
 		E39A8BCF15E932B4003D7D92 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E39A8BD415E932B4003D7D92 /* UnitTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UnitTests-Prefix.pch"; sourceTree = "<group>"; };
+		E39A8BE215E93448003D7D92 /* CalculatorBrainTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalculatorBrainTests.h; sourceTree = "<group>"; };
+		E39A8BE315E93448003D7D92 /* CalculatorBrainTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalculatorBrainTests.m; sourceTree = "<group>"; };
 		E39C4F5315C6C7E60096C11C /* CalculatorBrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalculatorBrain.h; sourceTree = "<group>"; };
 		E39C4F5415C6C7E60096C11C /* CalculatorBrain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalculatorBrain.m; sourceTree = "<group>"; };
 		E3A45AC615D47E9300DB8226 /* MWStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWStack.h; sourceTree = "<group>"; };
@@ -139,6 +143,8 @@
 				E35E5D8515DF33FA001F485C /* MWStackTests.h */,
 				E35E5D8615DF33FA001F485C /* MWStackTests.m */,
 				E39A8BCC15E932B4003D7D92 /* Supporting Files */,
+				E39A8BE215E93448003D7D92 /* CalculatorBrainTests.h */,
+				E39A8BE315E93448003D7D92 /* CalculatorBrainTests.m */,
 			);
 			path = UnitTests;
 			sourceTree = "<group>";
@@ -273,6 +279,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E39A8BD915E93305003D7D92 /* MWStack.m in Sources */,
+				E39A8BE415E93448003D7D92 /* CalculatorBrainTests.m in Sources */,
+				E39A8BE615E93454003D7D92 /* CalculatorBrain.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -435,6 +443,7 @@
 				E39A8BD615E932B4003D7D92 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
