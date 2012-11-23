@@ -27,7 +27,9 @@ typedef enum _CalculatorOperation {
 - (id)pop;
 - (void)pushOperand:(double)operand;
 - (void)pushVariableOperand:(NSString *)operand;
-- (double)performOperation:(CalculatorOperation)operation;
+- (void)pushOperation:(CalculatorOperation)operation;
+- (double)run;
+- (double)runUsingVariableValues:(NSDictionary *)variableValues;
 + (double)runProgram:(id)program;
 + (double)runProgram:(id)program usingVariableValues:(NSDictionary *)variableValues;
 + (NSString *)descriptionOfProgram:(id)program;

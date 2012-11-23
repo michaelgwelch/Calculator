@@ -21,15 +21,13 @@ int iserror(double value)
 
 @interface CalculatorViewController ()
 
-// only set to true if at least one variable was entered.
-@property (nonatomic) BOOL userHasRequestedToRunProgramWithVariables;
+
 @property (nonatomic, readonly) BOOL userIsInMiddleOfEnteringNumber;
 @property (nonatomic, strong) CalculatorBrain *brain;
 @property (nonatomic, strong, readonly) NSDictionary *operationsForTitles;
 @property (nonatomic, readonly) BOOL userHasEnteredDecimalPoint;
 @property (nonatomic, strong) NSDictionary *testVariableValues;
 @property (nonatomic, strong) NSString* numberInProgress;
-@property (nonatomic) double currentResult;
 
 @end
 
@@ -42,8 +40,6 @@ int iserror(double value)
 @synthesize operationsForTitles = _operationsForTitles;
 @synthesize testVariableValues = _testVariableValues;
 @synthesize numberInProgress = _numberInProgress;
-@synthesize currentResult = _currentResult;
-@synthesize userHasRequestedToRunProgramWithVariables = _userHasRequestedToRunProgramWithVariables;
 
 - (NSString *)numberInProgress
 {
@@ -53,14 +49,6 @@ int iserror(double value)
     return _numberInProgress;
 }
 
-- (void)setNumberInProgress:(NSString *)numberInProgress
-{
-    if (!numberInProgress) {
-        _numberInProgress = @"";
-    } else {
-        _numberInProgress = numberInProgress;
-    }
-}
 
 - (NSDictionary *)operationsForTitles
 {
@@ -100,15 +88,12 @@ int iserror(double value)
 // will be filled as well.
 - (void)updateUI
 {
-    if (!self.userHasRequestedToRunProgramWithVariables)
-    {
-        self.testVariableValues = nil;
-    }
     
     if (self.userIsInMiddleOfEnteringNumber) {
         self.display.text = self.numberInProgress;
     } else {
-        self.display.text = [NSString stringWithFormat:@"%g", self.currentResult];
+        double currentResult = [CalculatorBrain runProgram:self.brain.program usingVariableValues:self.testVariableValues];
+        self.display.text = [NSString stringWithFormat:@"%g", currentResult];
         self.tape.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
         self.usedVariableValues.text = [CalculatorViewController describeUsedVariableValuesInProgram:self.brain.program usingVariableValues:self.testVariableValues];
     }
@@ -156,7 +141,7 @@ int iserror(double value)
 {
     if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
     
-    self.currentResult = [self.brain performOperation:[self calculateOperationFromTitle:sender.currentTitle]];
+    [self.brain pushOperation:[self calculateOperationFromTitle:sender.currentTitle]];
     [self updateUI];
 }
 
@@ -164,9 +149,7 @@ int iserror(double value)
 {
     if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
     
-    self.userHasRequestedToRunProgramWithVariables = NO;
     [self.brain pushVariableOperand:sender.currentTitle];
-    self.currentResult = [CalculatorBrain runProgram:self.brain.program];
     [self updateUI];
 }
 
@@ -186,8 +169,6 @@ int iserror(double value)
 {
     [self.brain reset];
     self.numberInProgress = @"";
-    self.currentResult = 0;
-    self.testVariableValues = @{};
     [self updateUI];
 }
 
@@ -220,7 +201,6 @@ int iserror(double value)
 - (IBAction)testButtonPressed:(UIButton *)sender
 {
     if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
-    self.userHasRequestedToRunProgramWithVariables = YES;
 
     if ([sender.currentTitle isEqualToString:@"Test 1"])
     {
@@ -242,15 +222,9 @@ int iserror(double value)
     }
     else if ([sender.currentTitle isEqualToString:@"Test 3"])
     {
-        self.testVariableValues =
-        @{
-        @"a" : [NSNumber numberWithDouble:1],
-        @"b" : [NSNumber numberWithDouble: -2],
-        @"c" : [NSNumber numberWithDouble:3]
-        };
+        self.testVariableValues = nil;
     }
     
-    self.currentResult = [CalculatorBrain runProgram:self.brain.program usingVariableValues:self.testVariableValues];
     [self updateUI];
 }
 
@@ -264,8 +238,6 @@ int iserror(double value)
     else
     {
         [self.brain pop];
-        self.userHasRequestedToRunProgramWithVariables = NO;
-        self.currentResult = [CalculatorBrain runProgram:self.brain.program];
     }
     [self updateUI];
 }

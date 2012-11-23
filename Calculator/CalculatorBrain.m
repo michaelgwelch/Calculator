@@ -102,17 +102,25 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
     return [self.programStack state];
 }
 
-- (double)performOperation:(CalculatorOperation)operation
+- (void)pushOperation:(CalculatorOperation)operation
 {
-    NSValue *operationValue = [NSValue value: &operation withObjCType:@encode(enum _CalculatorOperation)];
+    NSValue *operationValue = [NSValue value:&operation withObjCType:@encode(enum _CalculatorOperation)];
     [self.programStack push:operationValue];
-    double result = [CalculatorBrain runProgram:self.program];
-    return result;
+}
+
+- (double)run
+{
+    return [self runUsingVariableValues:nil];
+}
+
+- (double)runUsingVariableValues:(NSDictionary *)variableValues
+{
+    return [CalculatorBrain runProgram:self.program usingVariableValues:variableValues];
 }
 
 + (double)runProgram:(id)program
 {
-    return [self runProgram:program usingVariableValues:@{}];
+    return [self runProgram:program usingVariableValues:nil];
 }
 
 + (double)runProgram:(id)program
