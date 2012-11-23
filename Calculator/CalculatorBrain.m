@@ -12,7 +12,6 @@
 
 
 
-
 NSString *getOperationSymbol(CalculatorOperation operation)
 {
     switch (operation) {
@@ -215,8 +214,12 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
 {
     if (![program isKindOfClass:[NSArray class]]) return nil;
     
-    NSMutableSet *variablesInProgram = [[NSMutableSet alloc] init];
     NSArray *entries = program;
+    if (entries.count == 0) return nil;
+    
+    
+    NSMutableSet *variablesInProgram = [[NSMutableSet alloc] init];
+
     for (id entry in entries)
     {
         if ([entry isKindOfClass:[NSString class]])
@@ -322,27 +325,30 @@ NSString *parenthesizeForMultiplicationOrDivisionIfNeeded(NSArray *descriptionAr
                 withFirstOperand:(double)firstOperand
                 andSecondOperand:(double)secondOperand
 {
+    double result;
     switch (operation) {
         case CalculatorAddOperation:
-            return firstOperand + secondOperand;
+            result = firstOperand + secondOperand;
             break;
             
         case CalculatorSubtractOperation:
-            return firstOperand - secondOperand;
+            result = firstOperand - secondOperand;
             break;
             
         case CalculatorMultiplyOperation:
-            return firstOperand * secondOperand;
+            result = firstOperand * secondOperand;
             break;
             
         case CalculatorDivideOperation:
-            return firstOperand / secondOperand;
+            result = firstOperand / secondOperand;
             break;
             
         default:
-            return 0;
+            result = 0;
+            break;
             
     }
+    return result;
 }
 
 
