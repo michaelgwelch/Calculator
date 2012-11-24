@@ -18,6 +18,7 @@
 		E35BE44516607899001A48D3 /* GraphViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E35BE44416607899001A48D3 /* GraphViewController.m */; };
 		E35BE44B16607935001A48D3 /* GraphView.m in Sources */ = {isa = PBXBuildFile; fileRef = E35BE44A16607935001A48D3 /* GraphView.m */; };
 		E35BE44D16607BF0001A48D3 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E35BE44C16607BF0001A48D3 /* Default-568h@2x.png */; };
+		E35BE45416612E6C001A48D3 /* AxesDrawer.m in Sources */ = {isa = PBXBuildFile; fileRef = E35BE45316612E6C001A48D3 /* AxesDrawer.m */; };
 		E39A8BC815E932B4003D7D92 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E35E5D7B15DF33FA001F485C /* SenTestingKit.framework */; };
 		E39A8BC915E932B4003D7D92 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3448BFB15C44551007B2335 /* UIKit.framework */; };
 		E39A8BCA15E932B4003D7D92 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3448BFD15C44551007B2335 /* Foundation.framework */; };
@@ -48,6 +49,8 @@
 		E35BE44916607935001A48D3 /* GraphView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GraphView.h; sourceTree = "<group>"; };
 		E35BE44A16607935001A48D3 /* GraphView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GraphView.m; sourceTree = "<group>"; };
 		E35BE44C16607BF0001A48D3 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		E35BE45216612E6C001A48D3 /* AxesDrawer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AxesDrawer.h; sourceTree = "<group>"; };
+		E35BE45316612E6C001A48D3 /* AxesDrawer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AxesDrawer.m; sourceTree = "<group>"; };
 		E35E5D7B15DF33FA001F485C /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		E35E5D8515DF33FA001F485C /* MWStackTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MWStackTests.h; path = ../MWStackTests/MWStackTests.h; sourceTree = "<group>"; };
 		E35E5D8615DF33FA001F485C /* MWStackTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MWStackTests.m; path = ../MWStackTests/MWStackTests.m; sourceTree = "<group>"; };
@@ -124,6 +127,8 @@
 				E35BE44916607935001A48D3 /* GraphView.h */,
 				E35BE44A16607935001A48D3 /* GraphView.m */,
 				E35BE44316607899001A48D3 /* GraphViewController.h */,
+				E35BE45216612E6C001A48D3 /* AxesDrawer.h */,
+				E35BE45316612E6C001A48D3 /* AxesDrawer.m */,
 				E35BE44416607899001A48D3 /* GraphViewController.m */,
 				E39C4F5315C6C7E60096C11C /* CalculatorBrain.h */,
 				E39C4F5415C6C7E60096C11C /* CalculatorBrain.m */,
@@ -287,6 +292,7 @@
 				E3A45AC815D47E9300DB8226 /* MWStack.m in Sources */,
 				E35BE44516607899001A48D3 /* GraphViewController.m in Sources */,
 				E35BE44B16607935001A48D3 /* GraphView.m in Sources */,
+				E35BE45416612E6C001A48D3 /* AxesDrawer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,8 +8,9 @@
 
 #import "GraphViewController.h"
 #import "GraphView.h"
+#import "CalculatorBrain.h"
 
-@interface GraphViewController ()
+@interface GraphViewController() <GraphDataSource>
 @property (nonatomic,weak) IBOutlet GraphView *graphView;
 
 @end
@@ -17,6 +18,21 @@
 @implementation GraphViewController
 @synthesize graphView = _graphView;
 @synthesize program = _program;
+
+
+- (float)getYValueForXValue:(float)x
+{
+    NSDictionary *values = @{ @"x" : [NSNumber numberWithFloat:x] };
+    return [CalculatorBrain runProgram:self.program usingVariableValues:values];
+}
+
+- (void)setGraphView:(GraphView *)graphView
+{
+    _graphView = graphView;
+    [self.graphView addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self.graphView action:@selector(pan:)]];
+    [self.graphView addGestureRecognizer:[[UIPinchGestureRecognizer alloc] initWithTarget:self.graphView action:@selector(pinch:)]];
+    self.graphView.dataSource = self;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {

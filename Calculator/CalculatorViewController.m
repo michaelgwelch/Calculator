@@ -13,6 +13,7 @@
 
 #import "CalculatorViewController.h"
 #import "CalculatorBrain.h"
+#import "GraphViewController.h"
 
 int iserror(double value)
 {
@@ -37,6 +38,13 @@ int iserror(double value)
 @synthesize brain = _brain;
 @synthesize operationsForTitles = _operationsForTitles;
 @synthesize numberInProgress = _numberInProgress;
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"ShowGraph"]) {
+        [segue.destinationViewController setProgram:self.brain.program];
+    }
+}
 
 - (NSString *)numberInProgress
 {
