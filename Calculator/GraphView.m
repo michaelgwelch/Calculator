@@ -94,6 +94,20 @@
     }
 }
 
+- (void)addPointToGraphWithX:(CGFloat)x Y:(CGFloat)y fromPreviousYValue:(CGFloat)prevY withContext:(CGContextRef)context
+{
+    // If new y value isn't a graphable number, just return
+    if (isnan(y) || isinf(y)) return;
+    
+    if (isnan(prevY) || isinf(prevY)) {
+        // Then just add p as a point
+        CGContextMoveToPoint(context, x, y);
+    } else {
+        // Add Line to Point
+        CGContextAddLineToPoint(context, x, y);
+    }
+}
+
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -101,21 +115,23 @@
     [[UIColor blueColor] setStroke];
     [AxesDrawer drawAxesInRect:rect originAtPoint:self.origin scale:self.scale];
 
-    int xPixel = 0;
-    CGFloat x = xPixel / self.contentScaleFactor;
-    CGFloat xUnit = [self convertToXValueForXPoint:x];
+    int xPixel;
+    CGFloat x;
+    CGFloat xUnit;
     
-    CGFloat yUnit = [self.dataSource getYValueForXValue:xUnit];
-    CGFloat y = [self convertToYPointForYValue:yUnit];
-    CGContextMoveToPoint(context, x, y);
+    CGFloat yUnit;
+    CGFloat y;
+    CGFloat prevY = NAN;
     
-    for (xPixel = 1; xPixel < self.bounds.size.width * self.contentScaleFactor; xPixel++)
+    for (xPixel = 0; xPixel < self.bounds.size.width * self.contentScaleFactor; xPixel++)
     {
         x = xPixel / self.contentScaleFactor;
         xUnit = [self convertToXValueForXPoint:x];
         yUnit = [self.dataSource getYValueForXValue:xUnit];
         y = [self convertToYPointForYValue:yUnit];
-        CGContextAddLineToPoint(context, x, y);
+        
+        [self addPointToGraphWithX:x Y:y fromPreviousYValue:prevY withContext:context];
+        prevY = y;
     }
     CGContextDrawPath(context, kCGPathStroke);
     
