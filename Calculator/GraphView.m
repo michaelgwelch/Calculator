@@ -19,7 +19,7 @@
 
 - (void)setup
 {
-    self.scale = 1.0;
+    self.scale = 20.0;
     self.origin = CGPointMake(160,252);
 }
 
@@ -54,28 +54,53 @@
 }
 
 
-#define SCALE_POINTS_PER_UNIT 20.0
-
-
 - (float) convertToXValueForXPoint:(float)xPoint
 {
-    return (xPoint - self.origin.x) / SCALE_POINTS_PER_UNIT;
+    return (xPoint - self.origin.x) / self.scale;
 }
 
 - (float) convertToYPointForYValue:(float)yValue
 {
-    return self.origin.y - yValue * SCALE_POINTS_PER_UNIT;
+    return self.origin.y - yValue * self.scale;
 }
 
 
+- (void)pan:(UIPanGestureRecognizer *)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateChanged ||
+        gesture.state == UIGestureRecognizerStateEnded) {
+        CGPoint translation = [gesture translationInView:self];
+        self.origin = CGPointMake(self.origin.x + translation.x, self.origin.y + translation.y);
+        [gesture setTranslation:CGPointZero inView:self];
+        [self setNeedsDisplay];
+    }
+}
 
+- (void)tap:(UITapGestureRecognizer *)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateEnded) {
+        self.origin = [gesture locationInView:self];
+        [self setNeedsDisplay];
+    }
+}
+
+- (void)pinch:(UIPinchGestureRecognizer *)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateChanged ||
+        gesture.state == UIGestureRecognizerStateEnded) {
+        float scale = [gesture scale];
+        self.scale *= scale;
+        [gesture setScale:1.0];
+        [self setNeedsDisplay];
+    }
+}
 
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     [[UIColor blueColor] setStroke];
-    [AxesDrawer drawAxesInRect:rect originAtPoint:self.origin scale:SCALE_POINTS_PER_UNIT];
+    [AxesDrawer drawAxesInRect:rect originAtPoint:self.origin scale:self.scale];
 
     int xPixel = 0;
     int x = xPixel / self.contentScaleFactor;
