@@ -43,6 +43,7 @@ int iserror(double value)
 {
     if ([segue.identifier isEqualToString:@"ShowGraph"]) {
         [segue.destinationViewController setProgram:self.brain.program];
+        [segue.destinationViewController setTitle:[CalculatorBrain descriptionOfProgram:self.brain.program]];
     }
 }
 
