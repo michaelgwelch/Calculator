@@ -18,8 +18,6 @@
 
 @property (nonatomic) CGPoint origin;
 @property (nonatomic) float scale;
-@property (nonatomic) UIPanGestureRecognizer *panGesture;
-@property (nonatomic) UIPinchGestureRecognizer *pinchGesture;
 @property (nonatomic,weak) id <GraphDataSource> dataSource;
 
 @end

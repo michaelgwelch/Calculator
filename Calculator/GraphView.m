@@ -10,11 +10,10 @@
 #import "AxesDrawer.h"
 
 
+
 @implementation GraphView
 @synthesize origin = _origin;
 @synthesize scale = _scale;
-@synthesize panGesture = _panGesture;
-@synthesize pinchGesture = _pinchGesture;
 @synthesize dataSource = _dataSource;
 
 - (void)setup
@@ -103,11 +102,11 @@
     [AxesDrawer drawAxesInRect:rect originAtPoint:self.origin scale:self.scale];
 
     int xPixel = 0;
-    int x = xPixel / self.contentScaleFactor;
-    float xUnit = [self convertToXValueForXPoint:x];
+    CGFloat x = xPixel / self.contentScaleFactor;
+    CGFloat xUnit = [self convertToXValueForXPoint:x];
     
-    float yUnit = [self.dataSource getYValueForXValue:xUnit];
-    float y = [self convertToYPointForYValue:yUnit];
+    CGFloat yUnit = [self.dataSource getYValueForXValue:xUnit];
+    CGFloat y = [self convertToYPointForYValue:yUnit];
     CGContextMoveToPoint(context, x, y);
     
     for (xPixel = 1; xPixel < self.bounds.size.width * self.contentScaleFactor; xPixel++)
