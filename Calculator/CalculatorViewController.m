@@ -26,7 +26,6 @@ int iserror(double value)
 @property (nonatomic, strong) CalculatorBrain *brain;
 @property (nonatomic, strong, readonly) NSDictionary *operationsForTitles;
 @property (nonatomic, readonly) BOOL userHasEnteredDecimalPoint;
-@property (nonatomic, strong) NSDictionary *testVariableValues;
 @property (nonatomic, strong) NSString* numberInProgress;
 
 @end
@@ -35,10 +34,8 @@ int iserror(double value)
 
 @synthesize display = _display;
 @synthesize tape = _tape;
-@synthesize usedVariableValues = _usedVariableValues;
 @synthesize brain = _brain;
 @synthesize operationsForTitles = _operationsForTitles;
-@synthesize testVariableValues = _testVariableValues;
 @synthesize numberInProgress = _numberInProgress;
 
 - (NSString *)numberInProgress
@@ -92,10 +89,9 @@ int iserror(double value)
     if (self.userIsInMiddleOfEnteringNumber) {
         self.display.text = self.numberInProgress;
     } else {
-        double currentResult = [CalculatorBrain runProgram:self.brain.program usingVariableValues:self.testVariableValues];
+        double currentResult = [CalculatorBrain runProgram:self.brain.program];
         self.display.text = [NSString stringWithFormat:@"%g", currentResult];
         self.tape.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
-        self.usedVariableValues.text = [CalculatorViewController describeUsedVariableValuesInProgram:self.brain.program usingVariableValues:self.testVariableValues];
     }
 }
 
@@ -198,36 +194,6 @@ int iserror(double value)
     [self updateUI];
 }
 
-- (IBAction)testButtonPressed:(UIButton *)sender
-{
-    if (self.userIsInMiddleOfEnteringNumber) [self enterPressed];
-
-    if ([sender.currentTitle isEqualToString:@"Test 1"])
-    {
-        self.testVariableValues =
-        @{
-        @"a" : [NSNumber numberWithDouble:105.17],
-        @"b" : [NSNumber numberWithDouble:12.3],
-        @"x" : [NSNumber numberWithDouble:-3.57]
-        };
-    }
-    else if ([sender.currentTitle isEqualToString:@"Test 2"])
-    {
-        self.testVariableValues =
-        @{
-        @"a" : [NSNumber numberWithDouble:17],
-        @"b" : [NSNumber numberWithDouble: -12],
-        @"c" : [NSNumber numberWithDouble:45]
-        };
-    }
-    else if ([sender.currentTitle isEqualToString:@"Test 3"])
-    {
-        self.testVariableValues = nil;
-    }
-    
-    [self updateUI];
-}
-
 - (IBAction)undoPressed
 {
     if (self.userIsInMiddleOfEnteringNumber)
@@ -243,7 +209,6 @@ int iserror(double value)
 }
 
 - (void)viewDidUnload {
-    self.usedVariableValues = nil;
     self.display = nil;
     self.tape = nil;
     
