@@ -94,12 +94,17 @@
     }
 }
 
-- (void)addPointToGraphWithX:(CGFloat)x Y:(CGFloat)y fromPreviousYValue:(CGFloat)prevY withContext:(CGContextRef)context
+- (void)addPointToGraphWithX:(CGFloat)x Y:(CGFloat)y fromPreviousX:(CGFloat)prevX prevY:(CGFloat)prevY withContext:(CGContextRef)context
 {
     // If new y value isn't a graphable number, just return
     if (isnan(y) || isinf(y)) return;
     
-    if (isnan(prevY) || isinf(prevY)) {
+    // If slope is too large this may indicate a discontiunity as well.
+    // Not a great measure of discontinuity but it helps with tan(x)
+    float absSlope = fabsf((prevY - y) / (prevX - x));
+    
+    
+    if (isnan(prevY) || isinf(prevY) || absSlope > 5000) {
         // Then just add p as a point
         CGContextMoveToPoint(context, x, y);
     } else {
@@ -122,6 +127,7 @@
     CGFloat yUnit;
     CGFloat y;
     CGFloat prevY = NAN;
+    CGFloat prevX = -.5;
     
     for (xPixel = 0; xPixel < self.bounds.size.width * self.contentScaleFactor; xPixel++)
     {
@@ -130,8 +136,9 @@
         yUnit = [self.dataSource getYValueForXValue:xUnit];
         y = [self convertToYPointForYValue:yUnit];
         
-        [self addPointToGraphWithX:x Y:y fromPreviousYValue:prevY withContext:context];
+        [self addPointToGraphWithX:x Y:y fromPreviousX:prevX prevY:prevY withContext:context];
         prevY = y;
+        prevX = x;
     }
     CGContextDrawPath(context, kCGPathStroke);
     
